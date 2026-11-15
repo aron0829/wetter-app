@@ -1,0 +1,12 @@
+{
+  "name": "wetter-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Persönliche Wetter-PWA (Open-Meteo, RainViewer, Leaflet)",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\"",
+    "serve": "node tools/serve.mjs",
+    "icons": "node tools/make-icons.mjs"
+  }
+}
