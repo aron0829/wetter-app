@@ -88,10 +88,15 @@ export const ICON_NAMES = Object.keys(WEATHER);
 
 const cache = new Map();
 
-export function iconSvg(name, className = 'wx-icon') {
+/** Nur die Formen eines Wettericons (64er-Raster), ohne <svg>-Hülle. */
+export function iconBody(name) {
   const key = WEATHER[name] ? name : 'cloudy';
   if (!cache.has(key)) cache.set(key, WEATHER[key]());
-  return `<svg class="${className}" viewBox="0 0 64 64" aria-hidden="true">${cache.get(key)}</svg>`;
+  return cache.get(key);
+}
+
+export function iconSvg(name, className = 'wx-icon') {
+  return `<svg class="${className}" viewBox="0 0 64 64" aria-hidden="true">${iconBody(name)}</svg>`;
 }
 
 // ---------------------------------------------------------------- UI-Symbole
@@ -119,12 +124,13 @@ const UI = {
   drop: '<path fill="currentColor" d="M12 2.5S5.5 10 5.5 14.5a6.5 6.5 0 0 0 13 0C18.5 10 12 2.5 12 2.5z"/>',
   sun: `<circle cx="12" cy="12" r="4.2" fill="currentColor"/><path ${stroke} d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.5 1.5M17.2 17.2l1.5 1.5M5.3 18.7l1.5-1.5M17.2 6.8l1.5-1.5"/>`,
   radar: `<circle cx="12" cy="12" r="8.5" ${stroke}/><circle cx="12" cy="12" r="4" ${stroke}/><path ${stroke} d="M12 12l6-6"/>`,
-  leaf: '<path fill="currentColor" d="M20 3C10 3 4 8.5 4 15.5c0 1.2.2 2.300.6 3.300C7.500 14.500 11 11.500 15 10c-3.500 2.500-6.500 5.500-8.400 10.200l1.700.800c.500-1.200 1.100-2.300 1.800-3.300.800.200 1.600.300 2.400.300C18 18 21 12.500 20 3z"/>',
-  moon: '<path fill="currentColor" d="M11.200 3.500a8.500 8.500 0 1 0 9.300 11.300A7 7 0 0 1 11.200 3.500z"/>',
-  air: `<path ${stroke} d="M4 8c2-2 4-2 6 0s4 2 6 0 3-1.500 4-1M4 13c2-2 4-2 6 0s4 2 6 0 3-1.500 4-1M4 18c2-2 4-2 6 0s4 2 6 0 3-1.500 4-1"/>`,
-  edit: `<path ${stroke} d="M4 20h4L19 9l-4-4L4 16v4zM13.500 6.500l4 4"/>`,
-  check: `<path ${stroke} d="M5 12.500l4.500 4.500L19 7.500"/>`,
-  thermo: `<path ${stroke} d="M12 3.500a2 2 0 0 0-2 2v8.200a4 4 0 1 0 4 0V5.500a2 2 0 0 0-2-2z"/><circle cx="12" cy="17" r="1.600" fill="currentColor"/>`,
+  leaf: '<path fill="currentColor" d="M20 3C10 3 4 8.5 4 15.5c0 1.2.2 2.3.6 3.3C7.5 14.5 11 11.5 15 10c-3.5 2.5-6.5 5.5-8.4 10.2l1.7.800c.500-1.2 1.1-2.3 1.8-3.3.800.2 1.6.300 2.4.300C18 18 21 12.5 20 3z"/>',
+  moon: '<path fill="currentColor" d="M11.2 3.5a8.5 8.5 0 1 0 9.3 11.3A7 7 0 0 1 11.2 3.5z"/>',
+  air: `<path ${stroke} d="M4 8c2-2 4-2 6 0s4 2 6 0 3-1.5 4-1M4 13c2-2 4-2 6 0s4 2 6 0 3-1.5 4-1M4 18c2-2 4-2 6 0s4 2 6 0 3-1.5 4-1"/>`,
+  edit: `<path ${stroke} d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/>`,
+  check: `<path ${stroke} d="M5 12.5l4.5 4.5L19 7.5"/>`,
+  expand: `<path ${stroke} d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>`,
+  thermo: `<path ${stroke} d="M12 3.5a2 2 0 0 0-2 2v8.2a4 4 0 1 0 4 0V5.5a2 2 0 0 0-2-2z"/><circle cx="12" cy="17" r="1.6" fill="currentColor"/>`,
 };
 
 export function uiIcon(name, className = 'ui-icon') {

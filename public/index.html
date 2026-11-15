@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wetter</title>
+  <meta name="description" content="Persönliche Wetter-App">
+  <meta name="theme-color" content="#0f1029">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Wetter">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preload" href="fonts/plus-jakarta-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="theme-night">
+  <div class="backdrop" aria-hidden="true"></div>
+
+  <header id="topbar" class="topbar" aria-hidden="true">
+    <span class="topbar-place" id="topbar-place"></span>
+    <span class="topbar-time" id="topbar-time"></span>
+    <button class="icon-btn" type="button" data-action="open-places" aria-label="Orte verwalten" tabindex="-1" id="topbar-btn"></button>
+  </header>
+
+  <main id="pager" class="pager" aria-label="Orte"></main>
+  <nav id="dots" class="dots" aria-label="Ortswechsel"></nav>
+
+  <div id="places-sheet" class="overlay" hidden></div>
+  <div id="hours-sheet" class="overlay" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <noscript><p class="noscript">Diese App benötigt JavaScript.</p></noscript>
+
+  <script src="vendor/leaflet/leaflet.js" defer></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

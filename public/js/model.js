@@ -208,12 +208,14 @@ export function buildModel(forecast, nowIso) {
     humidity: c ? num(c.relative_humidity_2m) : h0.humidity,
     precip: c ? num(c.precipitation) : h0.precip,
     uv: c && num(c.uv_index) !== null ? c.uv_index : h0.uv,
+    humidityYesterday: start >= 24 ? at(hourly.relative_humidity_2m, start - 24) : null,
   };
 
   const model = {
     current,
     hours,
     days,
+    precipNext24: hours.slice(0, 24).reduce((sum, h) => sum + (h.precip ?? 0), 0),
     today: days.find((d) => d.date === today) || days[0],
     summary: '',
   };

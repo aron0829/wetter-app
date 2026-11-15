@@ -174,3 +174,19 @@ test('summary kündigt Regen in den nächsten Stunden an', () => {
   const m = buildModel(f, NOW);
   assert.match(m.summary, /Regen ab ca\. 3 Uhr/);
 });
+
+test('Feuchtigkeit von gestern zur selben Stunde wird für den Vergleich mitgeliefert', () => {
+  const f = makeForecast();
+  f.hourly.relative_humidity_2m[f.hourly.time.indexOf('2026-11-14T22:00')] = 55;
+  assert.equal(buildModel(f, NOW).current.humidityYesterday, 55);
+  assert.equal(buildModel(f, '2026-11-14T05:10').current.humidityYesterday, null);
+});
+
+test('Niederschlag der nächsten 24 Stunden wird summiert', () => {
+  const f = makeForecast();
+  const i = f.hourly.time.indexOf('2026-11-16T03:00');
+  f.hourly.precipitation[i] = 1.2;
+  f.hourly.precipitation[i + 1] = 0.3;
+  f.hourly.precipitation[i + 30] = 9;
+  assert.ok(Math.abs(buildModel(f, NOW).precipNext24 - 1.5) < 1e-9);
+});
