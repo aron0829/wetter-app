@@ -299,7 +299,8 @@ function credits(meta) {
   const stand = meta.fetchedAt
     ? `Stand: ${new Date(meta.fetchedAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr · `
     : '';
-  return `<footer class="credits">${stand}Uhrzeiten in Ortszeit<br>
+  return `<footer class="credits"><button class="btn" type="button" data-action="refresh">${uiIcon('refresh')}Aktualisieren</button>
+    <p>${stand}Uhrzeiten in Ortszeit</p>
     Wetterdaten: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> ·
     Radar: <a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer</a> ·
     Karte: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></footer>`;

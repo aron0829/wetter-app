@@ -36,7 +36,7 @@ function shellHtml() {
   </section>`;
 }
 
-export function createRadar() {
+export function createRadar({ onFullChange } = {}) {
   let active = null; // { slot, key, timezone, map, layers, frames, host, index, timer, observer }
 
   function setMessage(text) {
@@ -103,6 +103,7 @@ export function createRadar() {
     const card = a.slot.querySelector('.radar-card');
     card.classList.toggle('is-full', on);
     document.body.classList.toggle('radar-full', on);
+    onFullChange?.(on);
     const btn = card.querySelector('[data-radar="full"]');
     btn.innerHTML = uiIcon(on ? 'close' : 'expand');
     btn.setAttribute('aria-label', on ? 'Vollbild schließen' : 'Karte im Vollbild');

@@ -29,12 +29,30 @@ function safeStorage() {
 const $ = (id) => document.getElementById(id);
 const store = createPlaceStore(safeStorage());
 const entries = new Map(); // Ort-ID → { forecast, air, fetchedAt, model, modelHour, error, loading }
-const radar = createRadar();
+const radar = createRadar({ onFullChange: (on) => (on ? overlayOpened() : overlayClosed()) });
 
 let here = readJson('here.v1'); // { lat, lon, name, admin1, country, countryCode, named }
 if (!here || !Number.isFinite(here.lat) || !Number.isFinite(here.lon)) here = null;
 let hereStatus = here ? 'ok' : 'locating';
 let hereMessage = '';
+
+// ------------------------------------------------------------ Zurück-Taste
+// Ein geöffnetes Overlay bekommt einen Verlaufseintrag: "Zurück" schließt es dann,
+// statt die App zu verlassen.
+
+function overlayOpened() {
+  if (!history.state?.overlay) history.pushState({ overlay: true }, '');
+}
+
+function overlayClosed() {
+  if (history.state?.overlay) history.back();
+}
+
+window.addEventListener('popstate', () => {
+  closeHours();
+  sheet.close();
+  radar.closeFull();
+});
 
 // ------------------------------------------------------------ Orte
 
@@ -306,8 +324,10 @@ const sheet = createPlacesSheet($('places-sheet'), {
     };
   },
   onOpen() {
+    overlayOpened();
     allPlaces().forEach((p) => load(p.id));
   },
+  onClose: () => overlayClosed(),
   onSelect(id) {
     sheet.close();
     const index = allPlaces().findIndex((p) => p.id === id);
@@ -363,12 +383,15 @@ function openHours() {
     <div class="sheet-body">${renderHours(model)}</div></div>`;
   root.hidden = false;
   root.querySelector('button').focus();
+  overlayOpened();
 }
 
 function closeHours() {
   const root = $('hours-sheet');
+  if (root.hidden) return;
   root.hidden = true;
   root.innerHTML = '';
+  overlayClosed();
 }
 
 // ------------------------------------------------------------ Hinweis

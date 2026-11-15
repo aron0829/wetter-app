@@ -651,9 +651,12 @@ a { color: inherit; }
   padding: 12px 4px;
   text-align: left;
   border-radius: 14px;
-  background: var(--card-strong);
+  background: transparent;
 }
-.place:active { background: #15173a; }
+button.place:active { background: #15173a; }
+.place-edit { display: flex; flex-direction: column; gap: 2px; padding: 10px 4px; }
+.place-edit b { font-size: 19px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.place-edit small { font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .place-name { display: flex; align-items: baseline; gap: 8px; min-width: 0; font-size: 22px; font-weight: 700; }
 .place-name .ui-icon { width: 20px; height: 20px; align-self: center; }
 .place-name b { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -669,7 +672,7 @@ a { color: inherit; }
 .place-row.is-dragging .place { background: #1b1e4d; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
 .place-row.is-shifting { transition: transform 0.16s; }
 .place-tools { display: flex; align-items: center; }
-.place-tools .icon-btn { width: 38px; height: 44px; border-radius: 12px; }
+.place-tools .icon-btn { width: 36px; height: 44px; border-radius: 12px; }
 .place-tools .icon-btn[disabled] { opacity: 0.25; }
 .place-tools .ui-icon { width: 20px; height: 20px; }
 .grip { touch-action: none; cursor: grab; color: var(--muted); }
@@ -773,3 +776,8 @@ a { color: inherit; }
 /* Radar im Vollbild: Kopfleiste und Punkte ausblenden, Wischen sperren */
 .radar-full .topbar, .radar-full .dots { display: none; }
 .radar-full .pager { overflow: hidden; }
+
+.credits .btn { height: 38px; padding: 0 16px; margin-bottom: 12px; font-size: 13px; color: #fff; }
+.credits .btn .ui-icon { width: 16px; height: 16px; }
+.credits .btn.is-busy .ui-icon { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

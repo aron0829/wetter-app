@@ -40,7 +40,7 @@ export function createPlacesSheet(root, opts) {
       const name = esc(place.name);
       return `<div class="place-row" data-id="${esc(place.id)}" data-saved-index="${savedIndex}">
         <button class="icon-btn grip" type="button" data-grip aria-label="${name} verschieben">${uiIcon('grip')}</button>
-        <div class="place">${placeInner(place)}</div>
+        <div class="place place-edit"><b>${name}</b><small>${esc(placeSubtitle(place))}</small></div>
         <div class="place-tools">
           <button class="icon-btn" type="button" data-move="-1" aria-label="${name} nach oben"${savedIndex === 0 ? ' disabled' : ''}>${uiIcon('up')}</button>
           <button class="icon-btn" type="button" data-move="1" aria-label="${name} nach unten"${savedIndex === savedCount - 1 ? ' disabled' : ''}>${uiIcon('down')}</button>
@@ -228,6 +228,7 @@ export function createPlacesSheet(root, opts) {
       root.innerHTML = '';
       clearTimeout(debounce);
       searchSeq += 1;
+      opts.onClose?.();
     },
     /** Liste neu zeichnen (neue Wetterdaten, neue Uhrzeit), ohne die Suche anzutasten. */
     refresh() {
