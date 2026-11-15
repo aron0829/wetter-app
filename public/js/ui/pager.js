@@ -57,7 +57,14 @@ export function createPager(root, dotsRoot, { onChange, onScroll }) {
   const api = {
     /** Seiten an die Ortsliste angleichen; vorhandene Seiten (und ihr Inhalt) bleiben erhalten. */
     setPages(places, activeId) {
-      ids = places.map((p) => p.id);
+      const nextIds = places.map((p) => p.id);
+      if (nextIds.join('|') === ids.join('|') && ids[active] === activeId) {
+        // Nur Namen haben sich geändert: nicht scrollen (der Nutzer wischt vielleicht gerade).
+        places.forEach((place) => sectionFor(place));
+        renderDots(places);
+        return;
+      }
+      ids = nextIds;
       for (const [id, el] of sections) {
         if (!ids.includes(id)) {
           el.remove();
