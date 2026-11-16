@@ -37,7 +37,10 @@ Die App selbst hat keine Abhängigkeiten; `npm install` wird nur für `npm run i
 
 ## Veröffentlichen
 
-Den **Inhalt** von `public/` in das Verzeichnis hochladen, auf das `wetter.mercao.de` zeigt.
+Ein Push auf `main` genügt: Der Workflow `.github/workflows/deploy.yml` lässt die Tests laufen und
+veröffentlicht `public/` über GitHub Pages. `wetter.mercao.de` zeigt per CNAME (bei STRATO) auf
+`aron0829.github.io`; das Zertifikat stellt GitHub aus, HTTPS ist erzwungen.
+
 HTTPS ist Pflicht: ohne SSL funktionieren weder Standortabfrage noch Installation als App.
 
 Nach einem Update zeigt die App beim ersten Öffnen noch den alten Stand und lädt den neuen im
