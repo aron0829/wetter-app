@@ -1,11 +1,12 @@
 // Start, Zustand und Verdrahtung der Wetter-App.
 import * as api from './api.js';
+import { moonPhase } from './astro.js';
 import { dropCached, loadCached, readJson, saveCached, writeJson } from './cache.js';
 import { distanceKm, locate } from './geo.js';
 import { uiIcon } from './icons.js';
 import { buildModel } from './model.js';
 import { createPlaceStore } from './places.js';
-import { sceneFor } from './scene.js';
+import { ambienceFor, sceneFor } from './scene.js';
 import { formatClock, formatDateLine, hourKey, nowInZone } from './time.js';
 import { esc } from './ui/html.js';
 import {
@@ -148,25 +149,44 @@ function renderPlace(id) {
 function syncTopbar() {
   const section = pager.section(pager.activeId());
   const visible = !!section && section.scrollTop > 64;
+  sky.scroll(section ? section.scrollTop : 0);
   const bar = $('topbar');
   bar.classList.toggle('is-visible', visible);
   bar.setAttribute('aria-hidden', String(!visible));
   $('topbar-btn').tabIndex = visible ? 0 : -1;
 }
 
+/** Hintergrund nach aktuellem Wetter; ohne Daten bleibt es beim ruhigen Nachtverlauf. */
+function syncSky(place, model) {
+  if (!model) {
+    const scene = sceneFor(null, false);
+    sky.set(scene);
+    return scene;
+  }
+  const scene = sceneFor(model.current.code, model.current.isDay);
+  sky.set(scene, {
+    ...ambienceFor({
+      windSpeed: model.current.windSpeed,
+      sunrise: model.today.sunrise,
+      sunset: model.today.sunset,
+      nowIso: nowInZone(tzOf(place)),
+    }),
+    moon: { ...moonPhase(), southern: place.lat < 0 },
+  });
+  return scene;
+}
+
 function syncChrome() {
   const place = placeById(pager.activeId());
   if (!place) return;
   const model = entries.get(place.id)?.model;
-  // Hintergrund nach aktuellem Wetter; ohne Daten bleibt es beim ruhigen Nachtverlauf.
-  const scene = model ? sceneFor(model.current.code, model.current.isDay) : sceneFor(null, false);
+  const scene = syncSky(place, model);
   const sceneClass = `scene-${scene.name}`;
   for (const name of [...document.body.classList]) {
     if (name.startsWith('scene-') && name !== sceneClass) document.body.classList.remove(name);
   }
   document.body.classList.add(sceneClass);
   document.body.classList.toggle('theme-night', scene.night);
-  sky.set(scene);
   const color = getComputedStyle(document.body).getPropertyValue('--bg-top').trim();
   if (color) document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
 
@@ -468,6 +488,8 @@ function tick() {
   }
   const active = placeById(activeId);
   if (active && active.lat != null) $('topbar-time').textContent = `${formatClock(tzOf(active))} Uhr`;
+  // Wind und Dämmerung im Hintergrund laufend nachführen.
+  if (active) syncSky(active, entries.get(active.id)?.model);
   if (document.visibilityState === 'visible') load(activeId);
   sheet.refresh();
 }

@@ -418,6 +418,15 @@ a { color: inherit; }
 }
 .hour-pop .ui-icon { width: 12px; height: 12px; color: var(--rain); }
 .hour-pop.is-dry { opacity: 0.55; }
+/* Menge in mm unter der Wahrscheinlichkeit, nur in Stunden mit Niederschlag. */
+.hour-rain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  line-height: 1.25;
+}
+.hour-rain small { font-size: 11px; color: var(--rain); white-space: nowrap; }
 
 .curve { display: block; margin-top: 6px; }
 .curve path { fill: none; stroke: rgba(255, 255, 255, 0.55); stroke-width: 2; }

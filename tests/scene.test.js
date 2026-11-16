@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { SCENE_NAMES, sceneFor } from '../public/js/scene.js';
+import { SCENE_NAMES, ambienceFor, sceneFor } from '../public/js/scene.js';
 import { WMO_CODES } from '../public/js/weathercodes.js';
 
 const css = readFileSync(new URL('../public/css/app.css', import.meta.url), 'utf8');
@@ -94,4 +94,34 @@ test('für jede Szene gibt es Farben im Stylesheet', () => {
     if (name === 'none') continue;
     assert.ok(css.includes(`.scene-${name} {`) || css.includes(`.scene-${name},`), `.scene-${name} fehlt in app.css`);
   }
+});
+
+// ------------------------------------------------------------ Stimmung
+
+const SUN = { sunrise: '2026-11-15T08:00', sunset: '2026-11-15T18:00' };
+
+test('Wind: 0 bis 1, steigt mit der Geschwindigkeit, ohne Angabe leichte Brise', () => {
+  assert.equal(ambienceFor({ windSpeed: 0, ...SUN, nowIso: '2026-11-15T12:00' }).wind, 0);
+  assert.equal(ambienceFor({ windSpeed: 30, ...SUN, nowIso: '2026-11-15T12:00' }).wind, 0.5);
+  assert.equal(ambienceFor({ windSpeed: 140, ...SUN, nowIso: '2026-11-15T12:00' }).wind, 1);
+  const calm = ambienceFor({ windSpeed: null, ...SUN, nowIso: '2026-11-15T12:00' }).wind;
+  assert.ok(calm > 0 && calm < 0.3);
+});
+
+test('Dämmerung: am stärksten zum Sonnenauf- und -untergang, mittags und nachts aus', () => {
+  const at = (nowIso) => ambienceFor({ windSpeed: 5, ...SUN, nowIso });
+  assert.deepEqual([at('2026-11-15T18:00').twilight, at('2026-11-15T18:00').dusk], [1, true]);
+  assert.deepEqual([at('2026-11-15T08:00').twilight, at('2026-11-15T08:00').dusk], [1, false]);
+  assert.ok(at('2026-11-15T17:40').twilight > 0.4);
+  assert.ok(at('2026-11-15T17:40').twilight < at('2026-11-15T17:55').twilight);
+  assert.ok(at('2026-11-15T18:20').twilight > 0.4);
+  assert.equal(at('2026-11-15T12:00').twilight, 0);
+  assert.equal(at('2026-11-15T23:30').twilight, 0);
+  assert.equal(at('2026-11-15T07:10').twilight, 0);
+});
+
+test('ohne Sonnenzeiten (Polartag, fehlende Daten) gibt es keine Dämmerung', () => {
+  const a = ambienceFor({ windSpeed: 5, sunrise: null, sunset: null, nowIso: '2026-11-15T18:00' });
+  assert.equal(a.twilight, 0);
+  assert.equal(ambienceFor().twilight, 0);
 });

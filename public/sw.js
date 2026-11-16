@@ -2,7 +2,7 @@
 // Eigene Dateien: sofort aus dem Cache, im Hintergrund aktualisieren (wirkt beim nächsten Start).
 // Wetterdaten, Radar und Kartenkacheln laufen unverändert übers Netz.
 
-const VERSION = 'v2';
+const VERSION = 'v3';
 const SHELL = `wetter-shell-${VERSION}`;
 
 const ASSETS = [

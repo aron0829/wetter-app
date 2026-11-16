@@ -1,5 +1,34 @@
 // Wettercode + Tageszeit → Szene für den Hintergrund. Keine DOM-Zugriffe.
 // Alle Stärken liegen zwischen 0 und 1; die Farben zur Szene stehen in app.css (.scene-<name>).
+import { minutesBetween } from './time.js';
+
+const TWILIGHT_MIN = 45; // so lange vor und nach Sonnenauf-/-untergang färbt sich der Horizont
+const FULL_WIND_KMH = 60;
+
+/**
+ * Stimmung zur Szene aus den echten Messwerten: Wind (treibt Wolken, neigt Regen und Schnee)
+ * und Dämmerung (warmer Horizont rund um Sonnenauf- und -untergang).
+ */
+export function ambienceFor({ windSpeed = null, sunrise = null, sunset = null, nowIso = null } = {}) {
+  const wind = typeof windSpeed === 'number' && Number.isFinite(windSpeed)
+    ? Math.min(1, Math.max(0, windSpeed / FULL_WIND_KMH))
+    : 0.15;
+
+  let twilight = 0;
+  let dusk = false;
+  if (nowIso) {
+    const near = (iso) => {
+      if (!iso) return 0;
+      const minutes = Math.abs(minutesBetween(iso, nowIso));
+      return Number.isFinite(minutes) ? Math.max(0, 1 - minutes / TWILIGHT_MIN) : 0;
+    };
+    const dawn = near(sunrise);
+    const evening = near(sunset);
+    twilight = Math.max(dawn, evening);
+    dusk = evening > dawn;
+  }
+  return { wind, twilight, dusk };
+}
 
 const EMPTY = { sun: 0, stars: 0, clouds: 0, rain: 0, snow: 0, fog: 0, thunder: false };
 

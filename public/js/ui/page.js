@@ -64,7 +64,8 @@ function hourlyCard(model) {
   const cols = hours.map((h, i) => {
     const label = i === 0 ? 'Jetzt' : (h.newDay || h.hhmm);
     const cls = i === 0 ? ' is-now' : (h.newDay ? ' is-newday' : '');
-    return `<div class="hour${cls}"><span class="hour-time">${label}</span>${iconSvg(h.icon)}${pop(h.pop, 'hour-pop')}</div>`;
+    const mm = h.precip !== null && h.precip >= 0.05 ? `<small>${fmtMm(h.precip)}</small>` : '';
+    return `<div class="hour${cls}"><span class="hour-time">${label}</span>${iconSvg(h.icon)}<span class="hour-rain">${pop(h.pop, 'hour-pop')}${mm}</span></div>`;
   }).join('');
   return `<section class="card" aria-label="Stündliche Vorhersage">
     <p class="card-summary">${esc(model.summary)}</p>
