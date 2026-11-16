@@ -132,7 +132,7 @@ function renderPlace(id) {
       top.innerHTML = renderTop(place, model, meta);
       bottom.innerHTML = renderBottom(place, model, entry.air, meta);
       if (stripLeft) top.querySelector('.hours-scroll').scrollLeft = stripLeft;
-      radar.ensureShell(radarSlot);
+      radar.ensureShell(radarSlot, place);
       if (isActive) radar.activate(radarSlot, place, tzOf(place));
     } else {
       if (isActive) radar.deactivate();

@@ -129,6 +129,7 @@ const UI = {
   air: `<path ${stroke} d="M4 8c2-2 4-2 6 0s4 2 6 0 3-1.5 4-1M4 13c2-2 4-2 6 0s4 2 6 0 3-1.5 4-1M4 18c2-2 4-2 6 0s4 2 6 0 3-1.5 4-1"/>`,
   edit: `<path ${stroke} d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/>`,
   check: `<path ${stroke} d="M5 12.5l4.5 4.5L19 7.5"/>`,
+  external: `<path ${stroke} d="M14 5h5v5M19 5l-8 8M11 7H6v11h11v-5"/>`,
   expand: `<path ${stroke} d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>`,
   thermo: `<path ${stroke} d="M12 3.5a2 2 0 0 0-2 2v8.2a4 4 0 1 0 4 0V5.5a2 2 0 0 0-2-2z"/><circle cx="12" cy="17" r="1.6" fill="currentColor"/>`,
 };

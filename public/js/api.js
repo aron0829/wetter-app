@@ -107,6 +107,14 @@ export function radarTileUrl(host, path) {
   return `${host}${path}/256/{z}/{x}/{y}/2/1_1.png`;
 }
 
+/**
+ * Link zum WetterRadar von WetterOnline, zentriert auf den Ort. Nur ein Verweis nach außen:
+ * Die App lädt dort nichts. Koordinaten auf zwei Stellen gerundet (rund 1 km).
+ */
+export function wetterOnlineRadarUrl(lat, lon) {
+  return `https://www.wetteronline.de/wetterradar?wrx=${lat.toFixed(2)},${lon.toFixed(2)}&wrm=8`;
+}
+
 // ------------------------------------------------------------ Netzwerk
 
 async function getJson(url, { timeout = 12000 } = {}) {

@@ -31,7 +31,8 @@ test('days beschriftet Gestern, Heute und Wochentage nach Ortsdatum', () => {
   assert.equal(m.days[1].isPast, false);
   assert.equal(m.days[2].label, 'Mo.');
   assert.equal(m.today.date, '2026-11-15');
-  assert.equal(m.today.max, 21);
+  // Höchstwert aus den Stunden 7–19 Uhr (dort 19 Uhr), nicht der Kalendertagswert 21
+  assert.ok(Math.abs(m.today.max - 12.9) < 1e-9);
   assert.equal(m.today.min, 11);
   assert.equal(m.today.sunrise, '2026-11-15T08:03');
 });
@@ -189,4 +190,41 @@ test('Niederschlag der nächsten 24 Stunden wird summiert', () => {
   f.hourly.precipitation[i + 1] = 0.3;
   f.hourly.precipitation[i + 30] = 9;
   assert.ok(Math.abs(buildModel(f, NOW).precipNext24 - 1.5) < 1e-9);
+});
+
+test('Höchstwert zählt nur 7 bis 19 Uhr: ein warmer Wert um Mitternacht verfälscht den Tag nicht', () => {
+  // Kaltfront: 9,7° um Mitternacht, tagsüber nur noch rund 5°.
+  const f = makeForecast();
+  const day = '2026-11-17';
+  f.hourly.time.forEach((t, i) => {
+    if (!t.startsWith(day)) return;
+    const h = Number(t.slice(11, 13));
+    f.hourly.temperature_2m[i] = h === 14 ? 5.4 : 9.7 - h * 0.35;
+  });
+  f.daily.temperature_2m_max[f.daily.time.indexOf(day)] = 9.7;
+  const m = buildModel(f, NOW);
+  const d = m.days.find((x) => x.date === day);
+  assert.ok(Math.abs(d.max - 7.25) < 1e-9, `max ist ${d.max}`); // 7 Uhr: 9,7 − 7 · 0,35
+});
+
+test('Höchstwert schließt 7 und 19 Uhr ein, 6 und 20 Uhr nicht', () => {
+  const f = makeForecast();
+  const day = '2026-11-17';
+  const set = (hour, value) => { f.hourly.temperature_2m[f.hourly.time.indexOf(`${day}T${hour}:00`)] = value; };
+  f.hourly.time.forEach((t, i) => { if (t.startsWith(day)) f.hourly.temperature_2m[i] = 5; });
+  const max = () => buildModel(f, NOW).days.find((x) => x.date === day).max;
+  set('06', 30);
+  set('20', 30);
+  assert.equal(max(), 5);
+  set('07', 8);
+  assert.equal(max(), 8);
+  set('19', 9);
+  assert.equal(max(), 9);
+});
+
+test('ohne Stundenwerte bleibt der Tageswert der API', () => {
+  const f = makeForecast();
+  const empty = '2026-11-18';
+  f.hourly.time.forEach((t, i) => { if (t.startsWith(empty)) f.hourly.temperature_2m[i] = null; });
+  assert.equal(buildModel(f, NOW).days.find((x) => x.date === empty).max, 24);
 });

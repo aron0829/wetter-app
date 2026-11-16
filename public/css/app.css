@@ -636,6 +636,8 @@ a { color: inherit; }
 }
 .radar-hint { margin-top: 12px; font-size: 12px; color: var(--muted); line-height: 1.4; }
 .radar-head { display: flex; align-items: center; justify-content: space-between; }
+.radar-ext { width: fit-content; text-decoration: none; }
+.radar-card.is-full .radar-ext { display: none; }
 .radar-head .icon-btn { width: 36px; height: 36px; margin: -8px -6px -8px 0; }
 .radar-head .ui-icon { width: 20px; height: 20px; }
 

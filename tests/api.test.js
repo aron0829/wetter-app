@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   forecastUrl, airQualityUrl, geocodeUrl, reverseUrl,
-  placeFromGeocoding, parseReverse, parseRadar, radarTileUrl,
+  placeFromGeocoding, parseReverse, parseRadar, radarTileUrl, wetterOnlineRadarUrl,
 } from '../public/js/api.js';
 
 test('forecastUrl nutzt best_match, Ortszeit und alle geforderten Variablen', () => {
@@ -118,5 +118,16 @@ test('radarTileUrl baut die Leaflet-Kachelvorlage', () => {
   assert.equal(
     radarTileUrl('https://tilecache.rainviewer.com', '/v2/radar/abc'),
     'https://tilecache.rainviewer.com/v2/radar/abc/256/{z}/{x}/{y}/2/1_1.png',
+  );
+});
+
+test('wetterOnlineRadarUrl zentriert das WetterRadar auf den Ort, Koordinaten auf rund 1 km gerundet', () => {
+  assert.equal(
+    wetterOnlineRadarUrl(51.05089, 13.73832),
+    'https://www.wetteronline.de/wetterradar?wrx=51.05,13.74&wrm=8',
+  );
+  assert.equal(
+    wetterOnlineRadarUrl(-33.4489, -70.6693),
+    'https://www.wetteronline.de/wetterradar?wrx=-33.45,-70.67&wrm=8',
   );
 });

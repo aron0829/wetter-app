@@ -1,7 +1,7 @@
 // Regenradar: RainViewer-Kacheln auf einer Leaflet-Karte mit OpenStreetMap-Hintergrund.
 // Es gibt höchstens eine aktive Karte (die der sichtbaren Seite); sie entsteht erst,
 // wenn die Radar-Karte in den sichtbaren Bereich kommt.
-import { fetchRadar, radarTileUrl } from '../api.js';
+import { fetchRadar, radarTileUrl, wetterOnlineRadarUrl } from '../api.js';
 import { uiIcon } from '../icons.js';
 import { formatUnix } from '../time.js';
 
@@ -19,7 +19,10 @@ async function loadFrames() {
   return data;
 }
 
-function shellHtml() {
+function shellHtml(place) {
+  const external = place && place.lat != null
+    ? `<a class="link-btn radar-ext" href="${wetterOnlineRadarUrl(place.lat, place.lon)}" target="_blank" rel="noopener noreferrer">Vorhersage-Radar bei WetterOnline ${uiIcon('external')}</a>`
+    : '';
   return `<section class="card radar-card" aria-label="Regenradar">
     <div class="radar-head">
       <h3 class="card-title">${uiIcon('radar')}Regenradar</h3>
@@ -33,6 +36,7 @@ function shellHtml() {
       <button class="icon-btn" type="button" data-radar="play" aria-label="Abspielen" disabled>${uiIcon('play')}</button>
     </div>
     <p class="radar-hint">${HINT}</p>
+    ${external}
   </section>`;
 }
 
@@ -191,8 +195,8 @@ export function createRadar({ onFullChange } = {}) {
 
   const api = {
     /** Statische Hülle der Karte (für jede Seite), damit das Layout beim Wischen nicht springt. */
-    ensureShell(slot) {
-      if (slot && !slot.firstElementChild) slot.innerHTML = shellHtml();
+    ensureShell(slot, place) {
+      if (slot && !slot.firstElementChild) slot.innerHTML = shellHtml(place);
     },
     activate(slot, place, timezone) {
       if (!slot || place.lat == null) return;
@@ -202,7 +206,7 @@ export function createRadar({ onFullChange } = {}) {
         return;
       }
       api.deactivate();
-      api.ensureShell(slot);
+      api.ensureShell(slot, place);
       active = {
         slot, key, timezone, lat: place.lat, lon: place.lon,
         map: null, layers: [], frames: [], host: '', index: 0, timer: null, observer: null, starting: false,
@@ -228,7 +232,7 @@ export function createRadar({ onFullChange } = {}) {
       a.observer?.disconnect();
       a.map?.remove();
       active = null;
-      a.slot.innerHTML = shellHtml();
+      a.slot.innerHTML = shellHtml(a);
     },
     closeFull() {
       if (active?.slot.querySelector('.radar-card.is-full')) {

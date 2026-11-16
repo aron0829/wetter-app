@@ -83,6 +83,30 @@ export function nightCode(hourly, date) {
   return best;
 }
 
+// ------------------------------------------------------------ Tageshöchstwert
+
+const DAY_FROM = 7; // Ortszeit, einschließlich
+const DAY_TO = 19;
+
+/**
+ * Höchste Temperatur zwischen 7 und 19 Uhr Ortszeit; null, wenn Stundenwerte fehlen.
+ * Das entspricht der in der Meteorologie üblichen Festlegung (Höchstwert von 06 bis 18 UTC),
+ * auf die Ortszeit übertragen. Der Tageswert der API gilt dagegen für den ganzen Kalendertag:
+ * Zieht nachts eine Kaltfront durch, wäre der Wert von Mitternacht der „Höchstwert", obwohl es
+ * tagsüber viel kälter ist.
+ */
+export function daytimeMax(hourly, date) {
+  let best = null;
+  hourly.time.forEach((t, i) => {
+    if (!t.startsWith(date)) return;
+    const hour = Number(t.slice(11, 13));
+    if (hour < DAY_FROM || hour > DAY_TO) return;
+    const temp = at(hourly.temperature_2m, i);
+    if (temp !== null && (best === null || temp > best)) best = temp;
+  });
+  return best;
+}
+
 // ------------------------------------------------------------ Kurztext
 
 function dominantPhrase(hours) {
@@ -179,7 +203,7 @@ export function buildModel(forecast, nowIso) {
       date,
       label,
       isPast: date < today,
-      max: at(daily.temperature_2m_max, i),
+      max: daytimeMax(hourly, date) ?? at(daily.temperature_2m_max, i),
       min: at(daily.temperature_2m_min, i),
       precipSum: at(daily.precipitation_sum, i),
       pop: at(daily.precipitation_probability_max, i),
