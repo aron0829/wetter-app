@@ -5,6 +5,7 @@ import { distanceKm, locate } from './geo.js';
 import { uiIcon } from './icons.js';
 import { buildModel } from './model.js';
 import { createPlaceStore } from './places.js';
+import { sceneFor } from './scene.js';
 import { formatClock, formatDateLine, hourKey, nowInZone } from './time.js';
 import { esc } from './ui/html.js';
 import {
@@ -13,6 +14,7 @@ import {
 import { createPager } from './ui/pager.js';
 import { createPlacesSheet } from './ui/places-sheet.js';
 import { createRadar } from './ui/radar.js';
+import { createSky } from './ui/sky.js';
 
 const STALE_MS = 10 * 60 * 1000;
 const HERE_ID = 'here';
@@ -29,6 +31,7 @@ function safeStorage() {
 const $ = (id) => document.getElementById(id);
 const store = createPlaceStore(safeStorage());
 const entries = new Map(); // Ort-ID → { forecast, air, fetchedAt, model, modelHour, error, loading }
+const sky = createSky($('sky'));
 const radar = createRadar({ onFullChange: (on) => (on ? overlayOpened() : overlayClosed()) });
 
 let here = readJson('here.v1'); // { lat, lon, name, admin1, country, countryCode, named }
@@ -155,10 +158,15 @@ function syncChrome() {
   const place = placeById(pager.activeId());
   if (!place) return;
   const model = entries.get(place.id)?.model;
-  let theme = 'theme-night';
-  if (model?.current.isDay) theme = model.current.code >= 3 ? 'theme-gray' : 'theme-day';
-  document.body.classList.remove('theme-night', 'theme-day', 'theme-gray');
-  document.body.classList.add(theme);
+  // Hintergrund nach aktuellem Wetter; ohne Daten bleibt es beim ruhigen Nachtverlauf.
+  const scene = model ? sceneFor(model.current.code, model.current.isDay) : sceneFor(null, false);
+  const sceneClass = `scene-${scene.name}`;
+  for (const name of [...document.body.classList]) {
+    if (name.startsWith('scene-') && name !== sceneClass) document.body.classList.remove(name);
+  }
+  document.body.classList.add(sceneClass);
+  document.body.classList.toggle('theme-night', scene.night);
+  sky.set(scene);
   const color = getComputedStyle(document.body).getPropertyValue('--bg-top').trim();
   if (color) document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
 

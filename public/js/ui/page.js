@@ -171,7 +171,7 @@ function precipTile(model) {
   return `<section class="card tile">
     <h3 class="card-title">${uiIcon('umbrella')}Niederschlag</h3>
     <p class="tile-note">Heute ${fmtMm(today.precipSum)}</p>
-    <p class="tile-sub">Regenwahrscheinlichkeit ${fmtPct(today.pop)}</p>
+    <p class="tile-sub">Regenrisiko ${fmtPct(today.pop)}</p>
     <p class="tile-value">${fmtMm(precipNext24)}</p>
     <p class="tile-sub">in den nächsten 24 Stunden</p>
   </section>`;

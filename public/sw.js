@@ -2,7 +2,7 @@
 // Eigene Dateien: sofort aus dem Cache, im Hintergrund aktualisieren (wirkt beim nächsten Start).
 // Wetterdaten, Radar und Kartenkacheln laufen unverändert übers Netz.
 
-const VERSION = 'v1';
+const VERSION = 'v2';
 const SHELL = `wetter-shell-${VERSION}`;
 
 const ASSETS = [
@@ -18,6 +18,7 @@ const ASSETS = [
   'js/icons.js',
   'js/model.js',
   'js/places.js',
+  'js/scene.js',
   'js/time.js',
   'js/weathercodes.js',
   'js/ui/chart.js',
@@ -26,6 +27,7 @@ const ASSETS = [
   'js/ui/pager.js',
   'js/ui/places-sheet.js',
   'js/ui/radar.js',
+  'js/ui/sky.js',
   'vendor/leaflet/leaflet.js',
   'vendor/leaflet/leaflet.css',
   'fonts/plus-jakarta-sans-latin-wght-normal.woff2',
